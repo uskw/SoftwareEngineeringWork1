@@ -9,37 +9,74 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import javax.lang.model.util.ElementScanner6;
+
 import javafx.util.Pair;
 
 public class wf {
     public static void main(String[] args) {
-        switch (args[0]){
-            case "-c":
-                File f1 = new File(args[1]);
-                printWordFrequency(f1);
+        File f = null;
+        int n = -1;
+        int flag = -1;
+        for(int i = 0; i<args.length; i++)
+        {
+            switch (args[i])
+            {
+                case "-c":
+                    f = new File(args[i+1]);
+                    flag = 1;
+                    i++;
+                    break;
+                case "-f":
+                    flag = 2;
+                    f = new File(args[i+1]);
+                    i++;
+                    break;
+                case "-d":
+                    flag = 3;
+                    f = new File(args[i+1]);
+                    break;
+                case "-s":
+                    flag = 4;
+                    f = new File(args[i+1]);
+                    i++;
+                    break;
+                case "-n":
+                    n = Integer.parseInt(args[i+1]);
+                    i++;
+                    break;
+                case "-x":
+                    flag = 5;
+                    break;
+                case "-p":
+                    flag = 6;
+                    break;
+                case "-v":
+                    flag = 7;
+                    break;
+            }
+        }
+        switch(flag)
+        {
+            case 1:
+                printWordFrequency(f);
                 break;
-            case "-f":
-                File f2 = new File(args[1]);
-                printWords(f2);
+            case 2:
+                printWords(f, n);
                 break;
-            case "-d":
-                File f3 = new File(args[1]);
-                printWordsInDir(f3);
+            case 3:
+                printWordsInDir(f, n);
                 break;
-            case "-d -s":
-                File f4 = new File(args[1]);
-                printWordsInDir_recursive(f4);
+            case 4:
+                printWordsInDir_recursive(f, n);
                 break;
-            case "-n":
-                printHighFrequencyWords();
-                break;
-            case "-x":
+            case 5:
                 stopWords();
                 break;
-            case "-p":
+            case 6:
                 printPhrase();
                 break;
-            case "-v":
+            case 7:
                 uniformVerbForm();
                 break;
         }
@@ -118,12 +155,17 @@ public class wf {
         }
     }
 
-    public static void printWords(File f){
-        System.out.println("输出" + f.getName() + "中前ｎ个最常见的单词：");
-        System.out.println("请输入查询单词的数量ｎ：");
-        Scanner sc = new Scanner(System.in);
-        int n = sc.nextInt();
-        System.out.println("输出前" + n + "个最常见的单词：");
+    public static void printWords(File f, int n){
+        System.out.println("输出" + f.getName() + "中最常见的单词：");
+        if(n == -1)
+        {
+            System.out.println("输出所有单词：");
+        }
+        else
+        {
+            System.out.println("输出前" + n + "个最常见的单词：");
+        }
+        
         if(f.exists())
         {
             try
@@ -167,7 +209,7 @@ public class wf {
                 int sum = 0,num = 0;
                 for (Map.Entry<String, Integer> map : list) 
                 {
-                    if(num == n)
+                    if(num == n && n != -1)
                         break;
                     if(sum == 3)
                     {
@@ -195,8 +237,8 @@ public class wf {
         }
     }
 
-    public static void printWordsInDir(File f){
-        System.out.println("输出" + f.getName() + "目录下，每一个文件中前ｎ个最常见的单词：");
+    public static void printWordsInDir(File f, int n){
+        System.out.println("输出" + f.getName() + "目录下，每一个文件中最常见的单词：");
         if(f.exists())
         {
             if(f.isDirectory())
@@ -206,15 +248,15 @@ public class wf {
                 {
                     if(next[i].isFile())
                     {
-                        printWords(next[i]);
+                        printWords(next[i], n);
                     }
                 }
             }
         }
     }
 
-    public static void printWordsInDir_recursive(File f){
-        System.out.println("输出" + f.getName() + "目录下，所有子目录的文件中前ｎ个最常见的单词：");
+    public static void printWordsInDir_recursive(File f, int n){
+        System.out.println("输出" + f.getName() + "目录下，所有子目录的文件中最常见的单词：");
         if(f.exists())
         {
             if(f.isDirectory())
@@ -224,19 +266,15 @@ public class wf {
                 {
                     if(next[i].isFile())
                     {
-                        printWords(next[i]);
+                        printWords(next[i], n);
                     }
                     else
                     {
-                        printWordsInDir_recursive(next[i]);
+                        printWordsInDir_recursive(next[i], n);
                     }
                 }
             }
         }
-    }
-
-    public static void printHighFrequencyWords(){
-        System.out.println("??????????????????????????????????????????°n????????????????????");
     }
 
     public static void stopWords(){
